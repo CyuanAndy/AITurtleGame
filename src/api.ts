@@ -43,8 +43,13 @@ export async function askAI(question: string, story: Story): Promise<string> {
   const q = question.trim()
   if (!q) throw new AiApiError('问题不能为空')
 
-  // 按你的要求：前端直接调用后端接口（由后端代理 DeepSeek）
-  const chatUrl = 'http://localhost:3000/api/chat'
+  // ✅ 修复：用封装好的apiUrl函数，从环境变量读取地址，不再硬编码
+  if (!API_BASE_URL) {
+    throw new AiApiError(
+      '未配置 VITE_API_BASE_URL。请在Vercel环境变量里设置为你的Railway域名。',
+    )
+  }
+  const chatUrl = apiUrl('/api/chat')
 
   let res: Response
   try {
